@@ -9,7 +9,7 @@ class JobQueue:
         return self.array.pop(0)
 
     def decrease_rem_time(self):
-        self.array[0]['rem'] -= 1
+        self.array[0]['RM'] -= 1
 
     def peek(self):
         return self.array[0]
