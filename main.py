@@ -16,14 +16,6 @@ get_tt          = lambda j: prop(j, 'TT', turnaround_time(j))
 get_wt          = lambda j: prop(j, 'WT', waiting_time(j))
 
 
-# Round Robin Algorithm
-# Q           - Quantum Time
-# sched       - Process schedule
-# time        - Current time
-# queue       - Process queue
-# gantt       - Gantt chart
-# expiration  - Quantum interval
-# record_time - Gantt Chart updater
 def round_robin(data, Q):
     sched       = prepare_data(data[:])
     time        = 0
@@ -84,7 +76,6 @@ def round_robin(data, Q):
     foreach(print, sched)
 
 
-# Sample Data
 sched_data_1 = [
     {'PID': 0, 'AT': 0, 'BT': 250},
     {'PID': 1, 'AT': 50, 'BT': 170},
@@ -101,5 +92,4 @@ sched_data_2 = [
     {'PID': 'P4', 'AT': 3, 'BT': 3},
 ]
 
-# Run algorithm
 round_robin(sched_data_2, 3)
