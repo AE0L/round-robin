@@ -1,67 +1,49 @@
-class Queue:
-    def __init__(self):
-        self.array = []
+from job_queue import JobQueue
+from functions import prop
+from functions import every
 
-    def enqueue(self, val):
-        self.array.append(val)
+is_complete    = lambda j: j['rem'] == 0
+sched_complete = lambda s: every(lambda j: is_complete(j), s)
+gantt_chart    = lambda q, g: lambda t: g.append({'time': t, 'queue': list(map(lambda a: a['job'], q.to_array()))})
+prepare_data   = lambda d: list(map(lambda j: prop(j, 'rem', j['BT']), d))
 
-    def dequeue(self):
-        return self.array.pop(0)
+# Round Robin Algorithm
+# Q           - Quantum Time
+# sched       - Process schedule
+# time        - Current time
+# queue       - Process queue
+# gantt       - Gantt chart
+# expiration  - Quantum interval
+# record_time - Gantt Chart updater
+def round_robin(data, Q):
+    sched       = prepare_data(data[:])
+    time        = 0
+    queue       = JobQueue()
+    gantt       = []
+    expiration  = time + Q
+    record_time = gantt_chart(queue, gantt)
 
-    def value(self):
-        return self.array
-
-
-def sched_complete(sched):
-    for job in sched:
-        if job['rem'] > 0:
-            return False
-    return True
-
-
-def update_gantt(queue, gantt):
-    return lambda time: gantt.append({'time': time, 'queue': list(map(lambda a: a['job'], queue.value()))})
-
-
-def round_robin(sched, quantum):
-    time = 0
-    queue = Queue()
-    gantt = []
-    quantum_interval = time + quantum
-    record_time = update_gantt(queue, gantt)
-
-    # Add "remaining" attribute to each job
-    for job in sched:
-        job['rem'] = job['BT']
-
-    # Round Robin Algorithm
     while not sched_complete(sched):
-        # Add the job/s that arrived in queue
         for job in sched:
             if job['AT'] == time:
                 queue.enqueue(job)
                 record_time(time)
 
-        # If current process time is not yet expired
-        if time < quantum_interval:
-            # If current process finished before the expiration time
-            if queue.value()[0]['rem'] == 0:
-                tmp = queue.dequeue()
-                quantum_interval = time + quantum
+        if time < expiration:
+            if queue.peek()['rem'] == 0:
+                queue.dequeue()
+                expiration = time + Q
                 record_time(time)
             
-            queue.value()[0]['rem'] -= 1
-            
-        # If current process reached the expiration time
-        elif time == quantum_interval:
+            queue.decrease_rem_time()
+        elif time == expiration:
             process = queue.dequeue()
 
-            # Enqueue process if not finished
             if not process['rem'] == 0:
                 queue.enqueue(process)
                 
-            queue.value()[0]['rem'] -= 1
-            quantum_interval += quantum
+            queue.decrease_rem_time()
+            expiration += Q
             record_time(time)
 
         time += 1
@@ -69,13 +51,15 @@ def round_robin(sched, quantum):
     queue.dequeue()
     record_time(time)
 
-    # Ouput Gantt Chart
     for x in gantt:
         print('time:', x['time'], ', queue:', x['queue'])
     print('\ntotal time:', time)
 
 
 # Sample Data from https://en.wikipedia.org/wiki/Round-robin_scheduling
+# job - Process Name/ID
+# AT  - Arrival Time
+# BT  - Burst Time
 sched_data = [
     {'job': 0, 'AT': 0, 'BT': 250},
     {'job': 1, 'AT': 50, 'BT': 170},
@@ -85,7 +69,5 @@ sched_data = [
     {'job': 5, 'AT': 350, 'BT': 50}
 ]
 
-# Run algorithm with sample data
+# Run algorithm
 round_robin(sched_data, 100)
-
-    
