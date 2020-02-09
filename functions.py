@@ -1,6 +1,8 @@
-is_zero = lambda a: a == 0
-prop    = lambda a, b: a[b]
-equals  = lambda a, b: a == b
+is_zero       = lambda a: a == 0
+prop          = lambda a, b: a[b]
+equals        = lambda a, b: a == b
+getter        = lambda a: lambda j: prop(j, a)
+getter_setter = lambda a: lambda j, v=None: prop(j, a) if not v else set_prop(j, a, v)
 
 
 def set_prop(obj, att, val):
