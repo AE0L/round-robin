@@ -30,8 +30,8 @@ is_complete    = lambda j: is_zero(RM(j))
 sched_complete = lambda s: every(lambda j: is_complete(j), s)
 prepare_data   = lambda d: list(map(lambda j: RM(j, BT(j)), d))
 gantt_chart    = lambda q, g: lambda t: g.append({
-    'time': t,
-    'queue': list(map(lambda a: PID(a), q.to_array()))
+    'Time': t,
+    'Queue': list(map(lambda a: PID(a), q.to_array()))
 })
 
 
@@ -82,10 +82,14 @@ def round_robin(data, Q):
     avg_tt   = round(total_tt / len(sched), 2)
     avg_wt   = round(total_wt / len(sched), 2)
 
+    foreach(lambda a: a.pop('RM'), sched)
+
     return {
         'gantt': gantt,
-        'total_time': time,
-        'avg_tt': avg_tt,
-        'avg_wt': avg_wt,
+        'result': {
+            'Total Time': time,
+            'Average TT': avg_tt,
+            'Average WT': avg_wt
+        },
         'sched': sched
     }

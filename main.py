@@ -1,5 +1,6 @@
 from round_robin import round_robin
-from functions import foreach
+from table import Table
+from functions import foreach, prop, getter_setter as get_set, replace
 
 sched_data_1 = [
     {'PID': 0, 'AT': 0, 'BT': 250},
@@ -17,11 +18,22 @@ sched_data_2 = [
     {'PID': 'P4', 'AT': 3, 'BT': 3},
 ]
 
-result = round_robin(sched_data_2, 3)
+result  = round_robin(sched_data_1, 100)
+get_res = lambda a: prop(result, a)
+sched   = get_res('sched')
+gantt   = get_res('gantt')
+res_dtl = [get_res('result')]
+queue   = get_set('Queue')
+rem_quo = lambda a: queue(a, replace(queue(a), "'", ''))
 
-foreach(lambda x: print('TIME:', x['time'], ', QUEUE:', x['queue']), result['gantt'])
-print('\ntotal time              :', result['total_time'])
-print('Average Turn-Around Time:', result['avg_tt'])
-print('Average Waiting Time    :', result['avg_wt'])
-print('\nScheduling Result:')
-foreach(print, result['sched'])
+foreach(rem_quo, gantt)
+
+sched_table  = Table(sched, title='Schedule', margin=1)
+gantt_table  = Table(gantt, title='Gantt Chart', margin=1)
+result_table = Table(res_dtl, title='Result', margin=1)
+
+sched_table.print()
+print()
+gantt_table.print()
+print()
+result_table.print()
