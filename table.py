@@ -57,11 +57,12 @@ class Table():
         right_pad = cat(mul(' ', rem), VSL)
         ttl_cell  = cat(left_pad, cat(self._title, right_pad))
 
-        print(self._sep_border(HSL, TLC, TRC))
-        print(ttl_cell)
-        print(self._sep_border(LRD, UDR, UDL))
+        print(self._sep_border(HSL, TLC, TRC)) # Top Border
+        print(ttl_cell)                        # Title
+        print(self._sep_border(LRD, UDR, UDL)) # Separator
 
     def print(self):
+        # Table Title
         if self._title: self._print_title()
 
         rows      = len_range(self._values, start=1)
@@ -72,7 +73,7 @@ class Table():
         add_cell  = lambda a: lambda b, c: cat(c, f" {cell(a, b)} {VSL}")
         print_row = lambda a: print(reduce(add_cell(a), val_rng(a), cat(mul(' ', self._margin), VSL)))
 
-        print_row(0)
-        print(self._sep_border(CRS, UDR, UDL))
-        foreach(print_row, rows)
-        print(self._sep_border(LRU, BLC, BRC))
+        print_row(0)                           # Column Header
+        print(self._sep_border(CRS, UDR, UDL)) # Seperator
+        foreach(print_row, rows)               # Table Values
+        print(self._sep_border(LRU, BLC, BRC)) # Bottom Border

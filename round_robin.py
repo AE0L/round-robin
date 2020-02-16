@@ -1,10 +1,6 @@
 from job_queue import JobQueue
-from functions import prop
-from functions import set_prop
-from functions import every
-from functions import reduce
-from functions import foreach
-from functions import is_zero
+from functions import prop, set_prop, every, reduce, foreach, is_zero
+from functions import getter_setter as accessor, getter, append
 
 # PID - Process ID
 # AT  - Arrival Time
@@ -13,13 +9,13 @@ from functions import is_zero
 # CMP - Completion Time
 # TT  - Turn around Time
 # WT  - Waiting Time
-PID            = lambda j: prop(j, 'PID')
-AT             = lambda j: prop(j, 'AT')
-BT             = lambda j: prop(j, 'BT')
-RM             = lambda j, v=None: prop(j, 'RM') if not v else set_prop(j, 'RM', v)
-CMP            = lambda j, v=None: prop(j, 'CMP') if not v else set_prop(j, 'CMP', v)
-TT             = lambda j, v=None: prop(j, 'TT') if not v else set_prop(j, 'TT', v)
-WT             = lambda j, v=None: prop(j, 'WT') if not v else set_prop(j, 'WT', v)
+PID            = getter('PID')
+AT             = getter('AT')
+BT             = getter('BT')
+RM             = accessor('RM')
+CMP            = accessor('CMP')
+TT             = accessor('TT')
+WT             = accessor('WT')
 
 calc_tt        = lambda j: CMP(j) - AT(j)
 calc_wt        = lambda j: TT(j) - BT(j)
@@ -27,11 +23,12 @@ set_tt         = lambda j: TT(j, calc_tt(j))
 set_wt         = lambda j: WT(j, calc_wt(j))
 
 is_complete    = lambda j: is_zero(RM(j))
-sched_complete = lambda s: every(lambda j: is_complete(j), s)
+sched_complete = lambda s: every(is_complete, s)
 prepare_data   = lambda d: list(map(lambda j: RM(j, BT(j)), d))
-gantt_chart    = lambda q, g: lambda t: g.append({
+get_q_pids     = lambda q: list(map(PID, q.to_array()))
+gantt_chart    = lambda q, g: lambda t: append(g, {
     'Time': t,
-    'Queue': list(map(lambda a: PID(a), q.to_array()))
+    'Queue': get_q_pids(q)
 })
 
 
@@ -43,6 +40,7 @@ def round_robin(data, Q):
     q_time      = time + Q
     record_time = gantt_chart(queue, gantt)
 
+    # Start Algorithm
     while not sched_complete(sched):
         for job in sched:
             if AT(job) == time:
@@ -73,6 +71,7 @@ def round_robin(data, Q):
 
     CMP(queue.dequeue(), time)
     record_time(time)
+    # End Algorithm
 
     foreach(set_tt, sched)
     foreach(set_wt, sched)

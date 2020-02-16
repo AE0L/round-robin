@@ -18,7 +18,7 @@ sched_data_2 = [
     {'PID': 'P4', 'AT': 3, 'BT': 3},
 ]
 
-result  = round_robin(sched_data_1, 100)
+result  = round_robin(sched_data_2, 3)
 get_res = lambda a: prop(result, a)
 sched   = get_res('sched')
 gantt   = get_res('gantt')
