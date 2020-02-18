@@ -1,6 +1,6 @@
 from job_queue import JobQueue
 from functions import every, reduce, foreach, is_zero, append, getter 
-from functions import getter_setter as accessor
+from functions import getter_setter as accessor, if_then
 
 # PID - Process ID
 # AT  - Arrival Time
@@ -21,7 +21,6 @@ calc_tt        = lambda j: CMP(j) - AT(j)
 calc_wt        = lambda j: TT(j) - BT(j)
 set_tt         = lambda j: TT(j, calc_tt(j))
 set_wt         = lambda j: WT(j, calc_wt(j))
-
 is_complete    = lambda j: is_zero(RM(j))
 sched_complete = lambda s: every(is_complete, s)
 prepare_data   = lambda d: list(map(lambda j: RM(j, BT(j)), d))
@@ -45,7 +44,9 @@ def round_robin(data, Q):
         for job in sched:
             if AT(job) == time:
                 queue.enqueue(job)
-                record_time(time) if time == 0 else None
+
+                if is_zero(time):
+                    record_time(time)
 
         if time < q_time:
             if is_complete(queue.peek()):
@@ -56,15 +57,11 @@ def round_robin(data, Q):
 
             queue.decrease_rem_time()
         elif time == q_time:
-            job = queue.dequeue()
-
-            if not is_complete(job):
-                queue.enqueue(job)
-            else:
-                CMP(job, time)
-
-            queue.decrease_rem_time()
+            job     = queue.dequeue()
             q_time += Q
+
+            queue.enqueue(job) if not is_complete(job) else CMP(job, time)
+            queue.decrease_rem_time()
             record_time(time)
 
         time += 1

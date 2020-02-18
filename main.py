@@ -26,7 +26,7 @@ sched   = get_res('sched')
 res_dtl = [get_res('result')]
 
 sched_table  = Table(sched, title=f'Schedule Q={3}', margin=1)
-gantt_chart  = Gantt(result['gantt'], 3, margin=1)
+gantt_chart  = Gantt(result['gantt'], margin=1)
 result_table = Table(res_dtl, title='Result', margin=1)
 
 sched_table.print()

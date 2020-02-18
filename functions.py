@@ -14,6 +14,8 @@ strlen        = lambda a: len(str(a))
 values        = lambda a: list(a.values())
 arr_to_string = lambda a: list(map(str, a))
 surround      = lambda a, b: cat(b, cat(a, b))
+if_else       = lambda a, b, c: b if a else c
+if_then       = lambda a, b: b if a else None
 
 
 def cat(a, b):
