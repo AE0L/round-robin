@@ -1,16 +1,19 @@
-head          = lambda a: a[0]
-keys          = lambda a: list(a.keys())
-values        = lambda a: list(a.values())
-strlen        = lambda a: len(str(a))
 append        = lambda a, b: a.append(b)
-mul           = lambda a, b: a * b
-is_zero       = lambda a: a == 0
-prop          = lambda a, b: a[b]
 equals        = lambda a, b: a == b
 getter        = lambda a: lambda j: prop(j, a)
 getter_setter = lambda a: lambda j, v=None: prop(j, a) if not v else set_prop(j, a, v)
-replace       = lambda a, b, c: str(a).replace(b, c)
+head          = lambda a: a[0]
+is_zero       = lambda a: a == 0
+keys          = lambda a: list(a.keys())
 len_range     = lambda a, start=None: range(len(a)) if not start else range(start, len(a))
+mul           = lambda a, b: a * b
+prop          = lambda a, b: a[b]
+replace       = lambda a, b, c: str(a).replace(b, c)
+reverse       = lambda a: None if a.reverse() else a
+strlen        = lambda a: len(str(a))
+values        = lambda a: list(a.values())
+arr_to_string = lambda a: list(map(str, a))
+surround      = lambda a, b: cat(b, cat(a, b))
 
 
 def cat(a, b):
@@ -30,7 +33,7 @@ def every(cond, itr):
 
 
 def reduce(func, itr, acc=0):
-    for x in itr:
+    for x in tuple(itr):
         acc = func(x, acc)
     return acc
 

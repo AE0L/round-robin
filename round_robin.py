@@ -1,6 +1,6 @@
 from job_queue import JobQueue
-from functions import prop, set_prop, every, reduce, foreach, is_zero
-from functions import getter_setter as accessor, getter, append
+from functions import every, reduce, foreach, is_zero, append, getter 
+from functions import getter_setter as accessor
 
 # PID - Process ID
 # AT  - Arrival Time
@@ -45,7 +45,7 @@ def round_robin(data, Q):
         for job in sched:
             if AT(job) == time:
                 queue.enqueue(job)
-                record_time(time)
+                record_time(time) if time == 0 else None
 
         if time < q_time:
             if is_complete(queue.peek()):
@@ -76,8 +76,8 @@ def round_robin(data, Q):
     foreach(set_tt, sched)
     foreach(set_wt, sched)
 
-    total_tt = reduce(lambda j, a: TT(j) + a, sched, 0)
-    total_wt = reduce(lambda j, a: WT(j) + a, sched, 0)
+    total_tt = reduce(lambda j, a: TT(j) + a, sched)
+    total_wt = reduce(lambda j, a: WT(j) + a, sched)
     avg_tt   = round(total_tt / len(sched), 2)
     avg_wt   = round(total_wt / len(sched), 2)
 

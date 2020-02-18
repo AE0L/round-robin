@@ -1,5 +1,5 @@
 from functions import head, keys, values, foreach, reduce, strlen, append
-from functions import cat, mul, len_range
+from functions import cat, mul, len_range, surround as surr
 
 TLC = u'\u250C' # ┌
 TRC = u'\u2510' # ┐
@@ -26,8 +26,7 @@ class Table():
 
         foreach(append_table, table_values)
 
-        self._get_max_col_len()
-
+        self._max   = self._get_max_col_len()
         self._width = self._get_width()
 
     def _get_max_col_len(self):
@@ -36,7 +35,7 @@ class Table():
         get_max = lambda i: reduce(max_len, get_val(i), 0)
         tbl_rng = len_range(head(self._values))
 
-        self._max = list(map(get_max, tbl_rng))
+        return list(map(get_max, tbl_rng))
 
     def _get_width(self):
         return reduce(lambda a, b: b + a + 3, self._max, 1)
@@ -62,16 +61,15 @@ class Table():
         print(self._sep_border(LRD, UDR, UDL)) # Separator
 
     def print(self):
-        # Table Title
-        if self._title: self._print_title()
-
         rows      = len_range(self._values, start=1)
         val_rng   = lambda a: len_range(self._values[a])
         val       = lambda a, b: self._values[a][b]
         rem_spc   = lambda a, b: self._max[b] - len(str(a))
-        cell      = lambda a, b: f"{str(val(a, b))}{mul(' ', rem_spc(val(a, b), b))}"
-        add_cell  = lambda a: lambda b, c: cat(c, f" {cell(a, b)} {VSL}")
+        cell      = lambda a, b: surr(cat(str(val(a, b)), mul(' ', rem_spc(val(a, b), b))), ' ')
+        add_cell  = lambda a: lambda b, c: cat(c, cat(cell(a, b), VSL))
         print_row = lambda a: print(reduce(add_cell(a), val_rng(a), cat(mul(' ', self._margin), VSL)))
+
+        if self._title: self._print_title()    # Table Title (Optional)
 
         print_row(0)                           # Column Header
         print(self._sep_border(CRS, UDR, UDL)) # Seperator
